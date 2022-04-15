@@ -2,24 +2,52 @@ pipeline {
   agent any
   stages {
     stage('Build') {
-      steps {
-        sh 'echo "Building..."'
-        sh '''
+      parallel {
+        stage('Build') {
+          steps {
+            sh 'echo "Building..."'
+            sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
                 '''
+          }
+        }
+
+        stage('') {
+          steps {
+            sh 'echo "..."'
+          }
+        }
+
       }
     }
 
     stage('Deploy') {
-      steps {
-        timeout(time: 1, unit: 'MINUTES') {
-          retry(count: 5) {
-            sh 'echo "Deploying..."'
-          }
+      parallel {
+        stage('Deploy') {
+          steps {
+            timeout(time: 1, unit: 'MINUTES') {
+              retry(count: 5) {
+                sh 'echo "Deploying..."'
+              }
 
+            }
+
+          }
         }
 
+        stage('') {
+          steps {
+            sh 'echo "..."'
+          }
+        }
+
+      }
+    }
+
+    stage('') {
+      steps {
+        sh 'echo "dsf"'
       }
     }
 
